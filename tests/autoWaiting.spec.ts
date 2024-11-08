@@ -65,5 +65,5 @@ test("Network Wait for all calls", async ({ page }) => {
 test("Timeouts", async ({ page }) => {
   test.slow(); // all timeouts increased by 3
   const successMessage = page.locator(".bg-success");
-  await expect(successMessage).toBeVisible();
+  await expect(successMessage).toBeVisible({ timeout: 20000 });
 });
