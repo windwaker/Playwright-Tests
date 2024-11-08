@@ -1,5 +1,18 @@
-### Ngx-Admin Angular 14 application from akveo.com
+### Playwright tests for sample self hosted application
 
-This is modified and more lightweight version of original application to practice UI Automation with Playwright.
+#### Install Sample App
 
-The original repo is here: https://github.com/akveo/ngx-admin
+``` 
+npm install --force 
+npm install webpack
+```
+
+#### Run Sample App
+
+``` npm start ```
+
+#### Run tests
+
+``` npx playwright test ```
+
+![application screenshot](Screenshot.png)
