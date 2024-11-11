@@ -55,3 +55,20 @@ test.describe("Form Layouts Page", () => {
     await expect(option1Radio).not.toBeChecked();
   });
 });
+
+test("Check boxes", async ({ page }) => {
+  await page.getByText("Modal & Overlays").click();
+  await page.getByText("Toastr").click();
+
+  const hideOnClick = page.getByRole("checkbox", { name: "Hide on click" });
+  await hideOnClick.click({ force: true }); // will toggle the state
+  await hideOnClick.check({ force: true }); // will not toggle the state
+  await hideOnClick.uncheck({ force: true }); // will not toggle the state
+
+  // check all checkboxes on page
+  const allCheckBoxesOnPage = page.getByRole("checkbox");
+  for (const checkbox of await allCheckBoxesOnPage.all()) {
+    await checkbox.check({ force: true });
+    expect(await checkbox.isChecked()).toBeTruthy();
+  }
+});
