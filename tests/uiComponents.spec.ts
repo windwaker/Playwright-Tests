@@ -72,3 +72,38 @@ test("Check boxes", async ({ page }) => {
     expect(await checkbox.isChecked()).toBeTruthy();
   }
 });
+
+test.only("Select dropdowns", async ({ page }) => {
+  const themeSelector = page.locator("ngx-header").locator("nb-select");
+
+  await themeSelector.click();
+
+  // const options = page
+  //   .locator("nb-option-list")
+  //   .locator("nb-option", { hasText: "Dark" });
+
+  // await options.click();
+
+  const altOptions = page.locator("nb-option-list").locator("nb-option");
+
+  await expect(altOptions).toHaveText(["Light", "Dark", "Cosmic", "Corporate"]);
+
+  await altOptions.filter({ hasText: "Cosmic" }).click();
+
+  const header = page.locator("nb-layout-header");
+  await expect(header).toHaveCSS("background-color", "rgb(50, 50, 89)");
+
+  const colors = {
+    Light: "rgb(255, 255, 255)",
+    Dark: "rgb(34, 43, 69)",
+    Cosmic: "rgb(50, 50, 89)",
+    Corporate: "rgb(255, 255, 255)",
+  };
+
+  await themeSelector.click();
+  for (const color in colors) {
+    await altOptions.filter({ hasText: color }).click();
+    await expect(header).toHaveCSS("background-color", colors[color]);
+    await themeSelector.click(); //click again to setup up menu for next iteration
+  }
+});
