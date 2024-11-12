@@ -73,7 +73,7 @@ test("Check boxes", async ({ page }) => {
   }
 });
 
-test.only("Select dropdowns", async ({ page }) => {
+test("Select dropdowns", async ({ page }) => {
   const themeSelector = page.locator("ngx-header").locator("nb-select");
 
   await themeSelector.click();
@@ -106,4 +106,24 @@ test.only("Select dropdowns", async ({ page }) => {
     await expect(header).toHaveCSS("background-color", colors[color]);
     await themeSelector.click(); //click again to setup up menu for next iteration
   }
+});
+
+test.only("Tooltips", async ({ page }) => {
+  // GOTO sources tab in devtools and press CMD + backslash to pause DOM in debugger
+  await page.getByText("Modal & Overlays").click();
+  await page.getByText("Tooltip").click();
+
+  const tooltipPlacementCard = page.locator("nb-card", {
+    hasText: "Tooltip Placements",
+  });
+
+  const topButton = tooltipPlacementCard.getByRole("button", { name: "Top" });
+  await expect(topButton).toBeVisible();
+
+  const tooltip = await page.locator("nb-tooltip");
+  await topButton.hover();
+  const textOfTooltip = await tooltip.textContent();
+  expect(textOfTooltip).toEqual("This is a tooltip");
+  //await topButton.hover();
+  await expect(tooltip).toBeVisible();
 });
