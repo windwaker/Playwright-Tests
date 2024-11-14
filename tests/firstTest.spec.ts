@@ -1,4 +1,4 @@
-import { expect, Locator, test } from "@playwright/test";
+import { expect, Locator, test } from '@playwright/test';
 
 test.use({
   launchOptions: {
@@ -13,82 +13,82 @@ test.beforeAll(() => {
 });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("http://localhost:4200/", { waitUntil: "domcontentloaded" });
-  await page.getByText("Forms").click();
-  await page.getByText("Form Layouts").click();
+  await page.goto('http://localhost:4200/', { waitUntil: 'domcontentloaded' });
+  await page.getByText('Forms').click();
+  await page.getByText('Form Layouts').click();
 });
 
-test("Locator syntax rules", async ({ page }) => {
+test('Locator syntax rules', async ({ page }) => {
   // refactor to avoid index method
-  await page.locator(".shape-rectangle").first().click();
+  await page.locator('.shape-rectangle').first().click();
 });
 
-test("Child elements", async ({ page }) => {
+test('Child elements', async ({ page }) => {
   // combining locators
   await page.locator('nb-card nb-radio :text-is("Option 1")').click();
   // chaining locators
   await page
-    .locator("nb-card")
-    .locator("nb-radio")
+    .locator('nb-card')
+    .locator('nb-radio')
     .locator(':text-is("Option 2")')
     .click();
   // mix regular locators and user facing locators
   await page
-    .locator("nb-card")
-    .getByRole("button", { name: "Sign In" })
+    .locator('nb-card')
+    .getByRole('button', { name: 'Sign In' })
     .nth(0) // same as first(), try to avoid index methods
     .click();
 });
 
-test("Parent elements", async ({ page }) => {
+test('Parent elements', async ({ page }) => {
   await page
-    .locator("nb-card", { hasText: "Using the Grid" })
-    .getByRole("textbox", { name: "Email" })
+    .locator('nb-card', { hasText: 'Using the Grid' })
+    .getByRole('textbox', { name: 'Email' })
     .click();
 
-  await page.locator("nb-card", { has: page.locator("#inputEmail1") }).click();
+  await page.locator('nb-card', { has: page.locator('#inputEmail1') }).click();
 
   await page
-    .locator("nb-card")
-    .filter({ hasText: "Basic form" })
-    .getByRole("textbox", { name: "Email" })
-    .click();
-
-  await page
-    .locator("nb-card")
-    .filter({ has: page.locator(".status-danger") })
-    .getByRole("textbox", { name: "Password" })
+    .locator('nb-card')
+    .filter({ hasText: 'Basic form' })
+    .getByRole('textbox', { name: 'Email' })
     .click();
 
   await page
-    .locator("nb-card")
-    .filter({ has: page.locator("nb-checkbox") })
-    .filter({ hasText: "Sign in" })
-    .getByRole("textbox", { name: "Email" })
+    .locator('nb-card')
+    .filter({ has: page.locator('.status-danger') })
+    .getByRole('textbox', { name: 'Password' })
+    .click();
+
+  await page
+    .locator('nb-card')
+    .filter({ has: page.locator('nb-checkbox') })
+    .filter({ hasText: 'Sign in' })
+    .getByRole('textbox', { name: 'Email' })
     .click();
 
   await page
     .locator(':text-is("Inline form")')
-    .locator("..")
-    .getByRole("textbox", { name: "Email" })
+    .locator('..')
+    .getByRole('textbox', { name: 'Email' })
     .click();
 });
 
-test("Reusing Locators", async ({ page }) => {
+test('Reusing Locators', async ({ page }) => {
   // Arrange
-  const emailAddress: string = "test@test.com";
-  const password: string = "Password123";
+  const emailAddress: string = 'test@test.com';
+  const password: string = 'Password123';
 
   const basicForm: Locator = page
-    .locator("nb-card")
-    .filter({ hasText: "Basic form" });
+    .locator('nb-card')
+    .filter({ hasText: 'Basic form' });
 
-  const emailField = basicForm.getByRole("textbox", { name: "Email" });
-  const passwordField = basicForm.getByRole("textbox", { name: "Password" });
-  const checkBox = basicForm.locator("nb-checkbox").getByText("Check me out");
-  const submitButton: Locator = basicForm.getByRole("button", {
+  const emailField = basicForm.getByRole('textbox', { name: 'Email' });
+  const passwordField = basicForm.getByRole('textbox', { name: 'Password' });
+  const checkBox = basicForm.locator('nb-checkbox').getByText('Check me out');
+  const submitButton: Locator = basicForm.getByRole('button', {
     // name attribute can be used in any case
-    name: "SuBmIt",
+    name: 'SuBmIt',
   });
 
   // Act
@@ -103,52 +103,52 @@ test("Reusing Locators", async ({ page }) => {
   await expect(checkBox).toBeChecked();
 });
 
-test("Extracting values from the DOM", async ({ page }) => {
+test('Extracting values from the DOM', async ({ page }) => {
   const basicForm: Locator = page
-    .locator("nb-card")
-    .filter({ hasText: "Basic form" });
+    .locator('nb-card')
+    .filter({ hasText: 'Basic form' });
 
   const usingTheGridForm: Locator = page
-    .locator("nb-card")
-    .filter({ hasText: "Using the Grid" });
+    .locator('nb-card')
+    .filter({ hasText: 'Using the Grid' });
 
-  const buttonText = await basicForm.locator("button").textContent();
+  const buttonText = await basicForm.locator('button').textContent();
 
-  expect(buttonText).toEqual("Submit");
+  expect(buttonText).toEqual('Submit');
 
   const radioValues = await usingTheGridForm
-    .locator("nb-radio")
+    .locator('nb-radio')
     .allTextContents();
 
-  expect(radioValues).toContain("Option 2");
+  expect(radioValues).toContain('Option 2');
 
   // input value
-  const emailField = basicForm.getByRole("textbox", { name: "Email" });
-  await emailField.fill("test@test.com");
+  const emailField = basicForm.getByRole('textbox', { name: 'Email' });
+  await emailField.fill('test@test.com');
   const emailValue = await emailField.inputValue();
-  expect(emailValue).toBe("test@test.com");
-  const emailPlaceholder = await emailField.getAttribute("placeholder");
-  expect(emailPlaceholder).toBe("Email");
+  expect(emailValue).toBe('test@test.com');
+  const emailPlaceholder = await emailField.getAttribute('placeholder');
+  expect(emailPlaceholder).toBe('Email');
 });
 
-test("Assertions", async ({ page }) => {
+test('Assertions', async ({ page }) => {
   // Generic Assertions
   const value = 5;
   expect(value).toEqual(5);
 
   const basicFormButton: Locator = page
-    .locator("nb-card")
-    .filter({ hasText: "Basic form" })
-    .locator("button");
+    .locator('nb-card')
+    .filter({ hasText: 'Basic form' })
+    .locator('button');
 
   const text = await basicFormButton.textContent();
-  expect(text).toEqual("Submit");
+  expect(text).toEqual('Submit');
 
   // Locator Assertions
-  await expect(basicFormButton).toHaveText("Submit");
+  await expect(basicFormButton).toHaveText('Submit');
 
   // Soft Assertion
-  await expect.soft(basicFormButton).toHaveText("Blah");
+  await expect.soft(basicFormButton).toHaveText('Submit');
   // will still happen even though above soft assertion wil fail
   basicFormButton.click();
 });

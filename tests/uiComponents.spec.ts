@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { convertDateToWebFormat } from '../utils/dateUtils';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('http://localhost:4200/');
@@ -216,6 +217,85 @@ test.describe('Find specific user in table and modify their age.', () => {
   });
 });
 
-test('Date pickers', async ({ page }) => {
-  //
+test('Date picker', async ({ page }) => {
+  await page.getByText('Forms').click();
+  await page.getByText('Datepicker').click();
+
+  const commonDatepicker = page
+    .locator('nb-card', {
+      hasText: 'Common Datepicker',
+    })
+    .getByPlaceholder('Form Picker');
+
+  await commonDatepicker.click();
+  await page
+    .locator('.day-cell.ng-star-inserted:not(.bounding-month)')
+    .getByText('1', { exact: true })
+    .click();
+
+  await expect(commonDatepicker).toHaveValue('Nov 1, 2024');
+});
+
+test('Date picker advanced', async ({ page }) => {
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
+  await page.getByText('Forms').click();
+  await page.getByText('Datepicker').click();
+  const commonDatepicker = page
+    .locator('nb-card', {
+      hasText: 'Common Datepicker',
+    })
+    .getByPlaceholder('Form Picker');
+
+  await commonDatepicker.click();
+
+  let date = new Date();
+  date.setDate(date.getDate() + 1);
+  const offsetDate = date.getDate().toString();
+
+  await page
+    .locator('.day-cell.ng-star-inserted:not(.bounding-month)')
+    .getByText(offsetDate, { exact: true })
+    .click();
+
+  await expect(commonDatepicker).toHaveValue(convertDateToWebFormat(date));
+});
+
+test('Date picker month selector', async ({ page }) => {
+  await page.getByText('Forms').click();
+  await page.getByText('Datepicker').click();
+  const commonDatepicker = page
+    .locator('nb-card', {
+      hasText: 'Common Datepicker',
+    })
+    .getByPlaceholder('Form Picker');
+
+  await commonDatepicker.click();
+
+  let calendarMonthAndYear = await page
+    .locator('nb-calendar-view-mode')
+    .textContent();
+
+  let date = new Date();
+  date.setDate(date.getDate() + 365);
+  const expectedDate = date.getDate().toString();
+  const expectedMonth = date.toLocaleString('En-US', { month: 'long' });
+  const expectedYear = date.getFullYear().toString();
+
+  const monthAndYearWebFormat = ` ${expectedMonth} ${expectedYear} `;
+
+  while (!calendarMonthAndYear.includes(monthAndYearWebFormat)) {
+    await page
+      .locator('nb-calendar-pageable-navigation [data-name="chevron-right"]')
+      .click();
+    calendarMonthAndYear = await page
+      .locator('nb-calendar-view-mode')
+      .textContent();
+  }
+
+  await page
+    .locator('.day-cell.ng-star-inserted:not(.bounding-month)')
+    .getByText(expectedDate, { exact: true })
+    .click();
+
+  await expect(commonDatepicker).toHaveValue(convertDateToWebFormat(date));
 });
