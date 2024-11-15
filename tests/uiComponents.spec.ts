@@ -299,3 +299,54 @@ test('Date picker month selector', async ({ page }) => {
 
   await expect(commonDatepicker).toHaveValue(convertDateToWebFormat(date));
 });
+
+test('Sliders attributes', async ({ page }) => {
+  // not reccomended approach
+  // update slider x and y attributes
+  const tempGuage = page.locator(
+    '[tabtitle="Temperature"] ngx-temperature-dragger circle'
+  );
+
+  await tempGuage.evaluate((node) => {
+    node.setAttribute('cx', '232.630');
+    node.setAttribute('cy', '232.630');
+  });
+
+  await tempGuage.click(); // trigger an event on the element so ui is updated
+});
+
+test.only('Sliders mouse movement up', async ({ page }) => {
+  const tempBox = page.locator(
+    '[tabtitle="Temperature"] ngx-temperature-dragger'
+  );
+  // scroll box into view
+  await tempBox.scrollIntoViewIfNeeded();
+  const box = await tempBox.boundingBox(); // coordinates start from top left
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+  await page.mouse.move(x, y); // start from the centre of the box
+  await page.mouse.down(); //left click and hold
+  await page.mouse.move(x + 100, y);
+  await page.mouse.move(x + 100, y + 100);
+  await page.mouse.up(); // release mouse click
+
+  await expect(tempBox).toContainText('30');
+});
+
+test.only('Sliders mouse movement down', async ({ page }) => {
+  const tempBox = page.locator(
+    '[tabtitle="Temperature"] ngx-temperature-dragger'
+  );
+  // scroll box into view
+  await tempBox.scrollIntoViewIfNeeded();
+  const box = await tempBox.boundingBox(); // coordinates start from top left
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+  await page.mouse.move(x, y); // start from the centre of the box
+  await page.mouse.down(); //left click and hold
+  await page.mouse.move(x - 100, y);
+  await page.mouse.move(x - 100, y + 150);
+  await page.mouse.up(); // release mouse click
+
+  await expect(tempBox).toContainText('12'); // 12 is minimum value
+});
